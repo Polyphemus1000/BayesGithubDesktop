@@ -8,45 +8,39 @@ from Bayes import Bayes
 
 
 '''
-This is the main program it sets up the initial Gui where the user is asked to input via drop-downs, the SOL Mid-point 
-density and the heat flux in W/m^3
-When the button 'Calculate values is clicked, the SliderGui program is insubstatiated and from this the plots are produced.
+This is the main program it sets up the initial Gui where the user is asked to input which distributions he/she is interested in.
+When the button 'Show Distributions'  is clicked, the Bayes program is insubstatiated and from this the plots are produced.
 
 '''
 
 class InitialGui(customtkinter.CTk):
     
     def button_callback(self):
-        PriorDistribution =self.radio_var.get()
-        LikelihoodDistribution = self.radio_var1.get()
-        print(PriorDistribution)
-        print(LikelihoodDistribution)
+        PriorDistribution =self.radio_var.get() # get the values from the radio button
+        LikelihoodDistribution = self.radio_var1.get() # get the values from the radio button
         # insubstatiate the Slider Gui class as the S object
-        B= Bayes()
-        B.InitialValues(20,100, 40,200, PriorDistribution, LikelihoodDistribution)
+        B= Bayes() # create the Bayes object B
+        B.InitialValues(20,100, 40,200, PriorDistribution, LikelihoodDistribution) # run the funciton that runs everything else
+        
+        
       
         
     
     def __init__(self):
-        #customtkinter.set_ctk_parent_class(tkinterDnD.Tk)
+       
         
-        #customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
-        #customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
-        
-        # set up the GUI
+        # set up the InitialGui object without any functions apart from the one that is used for the reaction to the button being clicked
         
         super().__init__()
         self.geometry("1000x480")
         self.title("Bayes Analysis for different distributions")
         
-       # print(type(app), isinstance(app, tkinterDnD.Tk))
-       
-       # Set up the way to get the information back from the GUI
+
         
        
         
         
-        self.radio_var = tkinter.IntVar(value=0)
+        self.radio_var = tkinter.IntVar(value=0) # set up the variables that will be updated when we click the radio buttons
         self.radio_var1 = tkinter.IntVar(value=0)
         print(self.radio_var)
         
@@ -55,7 +49,7 @@ class InitialGui(customtkinter.CTk):
         frame_1 = customtkinter.CTkFrame(master=self)
         frame_1.pack(pady=20, padx=60, fill="both", expand=True)
         
-        # set up the labels
+        # set up the labels and the radio buttons and the final big button which will launch the Bayes class
         
         label_1 = customtkinter.CTkLabel(master=frame_1, justify=customtkinter.LEFT, text = "Whiich distribution should be used for the Prior")
         label_1.grid(row=1, column=0, padx=20, pady=20)
