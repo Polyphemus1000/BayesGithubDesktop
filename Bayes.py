@@ -9,11 +9,9 @@ class Bayes():
     
     def __init__(self):
         
-        n = 200
-        k = 40
+        self.n = 200
+        self.k = 40
         precision = 1024
-        k2 = k/2
-        n2= n/2 
         
         '''
         We set up the axis and figure for the whole class as essentially the function of this class is to plot
@@ -24,25 +22,34 @@ class Bayes():
         self.figure.subplots_adjust(bottom=0.25)# This is where we create the space for the sliders at the bottom
     
     
-    def InitialValues(self, k2,n2, k,n, PriorSelection, LikelihoodSelection):
+    def InitialValues(self, PriorSelection, LikelihoodSelection):
+        print(PriorSelection, LikelihoodSelection)
         x0=0.5 # not sure why we have to put this here and not in the init function
        
         # get the values from the InitialGui Radio buttons and then set the distribution function
         if PriorSelection ==1:
+            prior = self.beta_coinflip(self.prob_axis, x0*200, 200)
+            prior2 = self.beta_coinflip(self.prob_axis, x0 *100, 100)
+        if PriorSelection ==2:
             prior = self.cauchy(self.prob_axis, x0, gamma=0.02)
             prior2 = self.cauchy(self.prob_axis, x0, gamma=0.1)
-        elif PriorSelection == 2:
+        elif PriorSelection == 3:
             prior = self.guassian(self.prob_axis, u=x0, sigma=0.02)
             prior2 =self.guassian(self.prob_axis, u=x0, sigma=0.1)
-        elif PriorSelection == 3:
+        elif PriorSelection == 4:
             prior = self.uniform(self.prob_axis)
             prior2 = self.uniform(self.prob_axis)
             
-        if LikelihoodSelection ==4:
-            likelihood = self.binomial(k, n, p=self.prob_axis)
-            likelihood_normal = self.beta_coinflip(self.prob_axis, k2, n2)
-        elif LikelihoodSelection ==5:
-            likelihood = self.guassian(self.prob_axis, u=0.2, sigma=0.02)
+        if LikelihoodSelection ==5:
+            print('This is k', self.k)
+            print('This is n', self.n)
+            likelihood = self.binomial(self.k, self.n, p=self.prob_axis)
+            likelihood_normal = self.beta_coinflip(self.prob_axis, self.k, self.n)
+        elif LikelihoodSelection ==6:
+            likelihood = self.cauchy(self.prob_axis, x0 = self.k/self.n, gamma=0.02)
+            likelihood_normal = self.cauchy(self.prob_axis, x0 = self.k/self.n, gamma=0.02)
+        elif LikelihoodSelection ==7:
+            likelihood = self.guassian(self.prob_axis, u=self.k/self.n, sigma=0.02)
             likelihood_normal = self.guassian(self.prob_axis, u=0.2, sigma=0.02)
         # Do Bayes analysis
         joint = prior * likelihood
@@ -63,7 +70,7 @@ class Bayes():
         # Create the intial plots
         
         self.setThetaPlot(self.prob_axis, prior, prior2)
-        self.setLikelihoodPlot(self.prob_axis, likelihood_normal,n,k)
+        self.setLikelihoodPlot(self.prob_axis, likelihood_normal)
         self.setPosteriorPlot(self.prob_axis, posterior, posterior2)
         self.setPosteriorNotNormalisedPlot(self.prob_axis, joint, joint_varied)
         
@@ -88,7 +95,7 @@ class Bayes():
         Theta = Slider(ax = axTheta,label= 'Theta', valmin= 0.0, valmax = 1.0, valinit =x0, valstep=0.1)
         
         axLikelihood = self.figure.add_axes([left, 0.1, width, height])
-        Likelihood = Slider( ax=axLikelihood, label='Likelihood', valmin= 0.0, valmax = 1.0, valinit =k2/100, valstep=0.1 )
+        Likelihood = Slider( ax=axLikelihood, label='Likelihood', valmin= 0.0, valmax = 1.0, valinit =self.k/self.n, valstep=0.1 )
         
         # This function is within the InitialValues function. It is called when the either of the the two sliders are moved
         
@@ -97,29 +104,41 @@ class Bayes():
         # Get the values from the slider
             f = Theta.val
             h = Likelihood.val
+            theta_new = f * 100
+            print(f)
+            #n_new = h * 100 # get the number of new successes from the slider
+            knew = h * 100
+            print(knew)
+            print(h)
             x0 = f # The new x) is where the top slider is 
             if PriorSelection ==1:
+                NewPrior =  self.beta_coinflip(self.prob_axis, theta_new*2, 100*2)
+                NewPrior2 = self.beta_coinflip(self.prob_axis, theta_new, 100)
+            if PriorSelection ==2:
                 NewPrior = self.cauchy(self.prob_axis, x0, 0.02)
                 NewPrior2 = self.cauchy(self.prob_axis, x0, 0.1)
-            elif PriorSelection == 2:
+            elif PriorSelection == 3:
                 NewPrior = self.guassian(self.prob_axis, x0, sigma=0.02)
                 NewPrior2 =self.guassian(self.prob_axis, x0, sigma=0.1)
-            elif PriorSelection == 3:
+            elif PriorSelection == 4:
                  NewPrior = self.uniform(self.prob_axis)
                  NewPrior2= self.uniform(self.prob_axis)  
             self.axis[0].cla() # clear the whole of the 0 axis
             self.setThetaPlot(self.prob_axis, NewPrior, NewPrior2) #plot again
-            knew = h * 100 # get the number of new successes from the slider
-            print(knew)
-            print(n2)
-            if LikelihoodSelection ==4:
-                NewLikelihood = self.binomial(knew, n2, p=self.prob_axis)
-                NewLikelihood_normal =  self.beta_coinflip(self.prob_axis, knew, n2)
-            elif LikelihoodSelection ==5:
+           
+
+            if LikelihoodSelection ==5:
+                print(self.k, knew)
+                NewLikelihood = self.binomial(knew, 100, p=self.prob_axis)
+                NewLikelihood_normal =  self.beta_coinflip(self.prob_axis, knew, 100)
+            elif LikelihoodSelection ==6:
+                NewLikelihood = self.cauchy(self.prob_axis, h, 0.02)
+                NewLikelihood_normal = self.cauchy(self.prob_axis, h, 0.02)
+            elif LikelihoodSelection ==7:
                 NewLikelihood = self.guassian(self.prob_axis, h, sigma=0.02)
                 NewLikelihood_normal = self.guassian(self.prob_axis, h, sigma=0.02)
             self.axis[1].cla()
-            self. setLikelihoodPlot(self.prob_axis, NewLikelihood_normal,n2,knew)
+            self. setLikelihoodPlot(self.prob_axis, NewLikelihood_normal)
             NewJoint = NewPrior * NewLikelihood
             NewJoint2 = NewPrior2 * NewLikelihood
         
@@ -183,8 +202,8 @@ class Bayes():
         self.axis[0].legend(loc = 1)
         self.axis[0].set_title('Probability Distribution Function (Prior)  of P($\\theta$)')
         
-    def setLikelihoodPlot(self,prob_axisvalues, normalisedDistribution, n,k):
-        self.axis[1].plot(prob_axisvalues, normalisedDistribution,  color = 'blue', label = 'Likelihood of $\\theta$ with ' + str(n) + ' flips '+ str(k) + ' heads')
+    def setLikelihoodPlot(self,prob_axisvalues, normalisedDistribution):
+        self.axis[1].plot(prob_axisvalues, normalisedDistribution,  color = 'blue', label = 'Likelihood of $\\theta$ with ') # + str(n) + ' flips '+ str(k) + ' heads')
         self.axis[1].fill_between(prob_axisvalues, normalisedDistribution ,0, color='blue', alpha= 0.1)
         self.axis[1].set_xticks(arange(min(prob_axisvalues), max(prob_axisvalues)+0.1, 0.05))
         self.axis[1].legend(loc = 1)
