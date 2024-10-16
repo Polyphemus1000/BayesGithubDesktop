@@ -9,8 +9,9 @@ class Bayes():
     
     def __init__(self):
         
-        self.n = 200
-        self.k = 40
+        self.n = 100
+        self.k = 0.2 * self.n
+        self.ImaginaryPriorSampleSize = 25
         precision = 1024
         
         '''
@@ -28,8 +29,8 @@ class Bayes():
        
         # get the values from the InitialGui Radio buttons and then set the distribution function
         if PriorSelection ==1:
-            prior = self.beta_coinflip(self.prob_axis, x0*200, 200)
-            prior2 = self.beta_coinflip(self.prob_axis, x0 *100, 100)
+            prior = self.beta_coinflip(self.prob_axis, x0*self.ImaginaryPriorSampleSize,self.ImaginaryPriorSampleSize )
+            prior2 = self.beta_coinflip(self.prob_axis, (x0/2)*self.ImaginaryPriorSampleSize, self.ImaginaryPriorSampleSize/2)
         if PriorSelection ==2:
             prior = self.cauchy(self.prob_axis, x0, gamma=0.02)
             prior2 = self.cauchy(self.prob_axis, x0, gamma=0.1)
@@ -112,8 +113,8 @@ class Bayes():
             print(h)
             x0 = f # The new x) is where the top slider is 
             if PriorSelection ==1:
-                NewPrior =  self.beta_coinflip(self.prob_axis, theta_new*2, 100*2)
-                NewPrior2 = self.beta_coinflip(self.prob_axis, theta_new, 100)
+                NewPrior =  self.beta_coinflip(self.prob_axis, f * self.ImaginaryPriorSampleSize, self.ImaginaryPriorSampleSize)
+                NewPrior2 = self.beta_coinflip(self.prob_axis, f*self.ImaginaryPriorSampleSize/2, self.ImaginaryPriorSampleSize/2)
             if PriorSelection ==2:
                 NewPrior = self.cauchy(self.prob_axis, x0, 0.02)
                 NewPrior2 = self.cauchy(self.prob_axis, x0, 0.1)
